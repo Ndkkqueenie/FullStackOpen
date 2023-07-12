@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-const FeedbackButton = ({ text, handleClick }) => {
-  return <button onClick={handleClick}>{text}</button>;
+const FeedbackButton = ({ text, dataTestId, handleClick }) => {
+  return <button onClick={handleClick} data-testid={dataTestId}>{text}</button>;
 };
 
 const Statistics = ({ feedback }) => {
@@ -62,8 +62,8 @@ const App = () => {
   return (
     <div>
       <h1>Student Feedback</h1>
-      <FeedbackButton text="Good" handleClick={() => handleFeedback('good')} />
-      <FeedbackButton text="Neutral" handleClick={() => handleFeedback('neutral')} />
+      <FeedbackButton text="Good" dataTestId="good-count" handleClick={() => handleFeedback('good')} />
+      <FeedbackButton text="Neutral" dataTestId='neutral-count' handleClick={() => handleFeedback('neutral')} />
       <FeedbackButton text="Bad" handleClick={() => handleFeedback('bad')} />
       <h2>Statistics</h2>
       <Statistics feedback={feedback} />
