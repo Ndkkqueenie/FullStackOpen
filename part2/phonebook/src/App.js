@@ -10,15 +10,22 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
+  
     if (newName.trim() === '') {
       return;
     }
-
+  
+    const isDuplicate = persons.some((person) => person.name === newName);
+    if (isDuplicate) {
+      alert(`${newName} is already added to the phonebook.`);
+      return;
+    }
+  
     const newPerson = { name: newName };
     setPersons([...persons, newPerson]);
     setNewName('');
   };
+  
 
   return (
     <div>
