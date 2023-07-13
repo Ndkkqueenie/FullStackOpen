@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Note from './components/Note';
 
 const App = () => {
-  const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('')
-  const [showAll, setShowAll] = useState(true)
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState('');
+  const [showAll, setShowAll] = useState(true);
 
   const hookEffect = () => {
     console.log('effect')
@@ -15,7 +15,7 @@ const App = () => {
         console.log('promise fulfilled')
         setNotes(response.data)
       })
-  }
+  };
   
   useEffect(hookEffect, [])
 
@@ -24,17 +24,24 @@ const App = () => {
     const noteObject = {
       content: newNote,
       important: Math.random() < 0.5,
-      id: notes.length + 1,
     }
   
-    setNotes(notes.concat(noteObject))
-    setNewNote('')
-  }
+    axios
+    .post('http://localhost:3005/notes', noteObject)
+    .then(response => {
+      setNotes(notes.concat(response.data))
+      setNewNote('')
+    })
+  };
+
+  const toggleImportanceOf = (id) => {
+    console.log(`importance of ${id} needs to be toggled`)
+  };
 
   const handleNoteChange = (event) => {
     console.log(event.target.value)
     setNewNote(event.target.value)
-  }
+  };
 
   const notesToShow = showAll
     ? notes
@@ -45,12 +52,16 @@ const App = () => {
       <h1>Notes</h1>
       <div>
         <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? 'important' : 'all' }
+          Show {showAll ? 'Important' : 'All' }
         </button>
       </div>
       <ul>
         {notesToShow.map(note =>
-          <Note key={note.id} note={note} />
+          <Note 
+            key={note.id} 
+            note={note}
+            toggleImportance={() => toggleImportanceOf(note.id)}
+          />  
         )}
       </ul>
       <form onSubmit={addNote}>
@@ -62,6 +73,6 @@ const App = () => {
       </form>
     </div>
   )
-}
+};
 
 export default App
