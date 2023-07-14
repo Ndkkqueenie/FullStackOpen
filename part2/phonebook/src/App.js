@@ -36,35 +36,52 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
+  
     if (newName.trim() === '' || newNumber.trim() === '') {
       return;
     }
-
-    const isDuplicate = persons.some(
-      (person) => person.name === newName || person.number === newNumber
-    );
-    if (isDuplicate) {
-      alert(`${newName} or ${newNumber} is already added to the phonebook.`);
-      return;
+  
+    const existingPerson = persons.find((person) => person.name === newName);
+    if (existingPerson) {
+      const confirmUpdate = window.confirm(
+        `${newName} is already added to the phonebook. Replace the old number with a new one?`
+      );
+      if (confirmUpdate) {
+        const updatedPerson = { ...existingPerson, number: newNumber };
+        personService
+          .update(existingPerson.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id === returnedPerson.id ? returnedPerson : person
+              )
+            );
+            setNewName('');
+            setNewNumber('');
+          })
+          .catch((error) => {
+            // Handle error here
+            console.log('Error updating person:', error);
+          });
+      }
+    } else {
+      const newPerson = {
+        name: newName,
+        number: newNumber,
+      };
+      personService
+        .create(newPerson)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setNewName('');
+          setNewNumber('');
+        })
+        .catch((error) => {
+          // Handle error here
+          console.log('Error creating person:', error);
+        });
     }
-
-    const newPerson = { 
-      name: newName, 
-      number: newNumber 
-    };
-    personService
-      .create(newPerson)
-      .then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
-        setNewName('');
-        setNewNumber('');
-      })
-      .catch(error => {
-        // Handle error here
-        console.log('Error creating person:', error);
-      });
-  };
+  };  
 
   const handleDelete = (id) => {
     const personToDelete = persons.find((person) => person.id === id);
