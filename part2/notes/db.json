@@ -17,7 +17,7 @@
     },
     {
       "content": "I will have my browser developer console open all the time",
-      "important": false,
+      "important": true,
       "id": 4
     }
   ]
