@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import personService from './services/persons';
 import Form from './components/Form';
 import SearchField from './components/SearchField';
 import NumbersList from './components/NumbersList';
@@ -10,17 +10,17 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
   const [searchName, setSearchName] = useState('');
 
-  const hookEffect = () => {
-    console.log('Effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('Promise fulfilled')
-        setPersons(response.data)
+  useEffect(() => {
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
-  }
-  
-  useEffect(hookEffect, [])
+      .catch(error => {
+        // Handle error here
+        console.log('Error fetching data:', error);
+      });
+  }, []); // Dependency array: Only re-run the effect if persons state changes
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
@@ -49,14 +49,25 @@ const App = () => {
       return;
     }
 
-    const newPerson = { name: newName, number: newNumber };
-    setPersons([...persons, newPerson]);
-    setNewName('');
-    setNewNumber('');
+    const newPerson = { 
+      name: newName, 
+      number: newNumber 
+    };
+    personService
+      .create(newPerson)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('');
+        setNewNumber('');
+      })
+      .catch(error => {
+        // Handle error here
+        console.log('Error creating person:', error);
+      });
   };
 
-  const filteredPeople = persons.filter((person) =>
-    person.name.toLowerCase().includes(searchName.toLowerCase())
+  const filteredPersons = persons.filter((person) =>
+    person.name && person.name.toLowerCase().includes(searchName.toLowerCase())
   );
 
   return (
@@ -77,7 +88,7 @@ const App = () => {
       </div>
       <div>
         <h2>Numbers</h2>
-        <NumbersList persons={filteredPeople} />
+        <NumbersList persons={filteredPersons} />
       </div> 
     </div>
   );
