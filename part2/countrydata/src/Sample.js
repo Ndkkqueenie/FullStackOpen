@@ -47,14 +47,10 @@ const App = () => {
   const renderWeather = () => {
     if (weather) {
       const { name, main, weather: weatherInfo } = weather;
-      const icon = weatherInfo[0].icon;
-      const iconUrl = `https://openweathermap.org/img/wn/${icon}.png`;
-      
       return (
         <div>
           <h3>Weather in {name}</h3>
           <p>Temperature: {main.temp}°C</p>
-          <img src={iconUrl} alt="Weather Icon" />
           <p>Weather: {weatherInfo[0].description}</p>
         </div>
       );
@@ -94,23 +90,18 @@ const App = () => {
           onChange={handleSearchChange}
         />
       </div>
-      <br />
-      <div className="split left">
-        <div className="centered">
-          {renderCountries}
-        </div>
+      <div>
+        {renderCountries}
       </div>
       <div>
         {selectedCountry && (
-          <div className="split right">
-            <div className="centered">
-              <h2>{selectedCountry.name.common}</h2>
-              <p>Capital: {selectedCountry.capital}</p>
-              <p>Region: {selectedCountry.region}</p>
-              <p>Population: {selectedCountry.population}</p>
-              <p>Flag: {selectedCountry.flag}</p>
-              {renderWeather()}
-            </div>
+          <div>
+            <h2>{selectedCountry.name.common}</h2>
+            <p>Capital: {selectedCountry.capital}</p>
+            <p>Region: {selectedCountry.region}</p>
+            <p>Population: {selectedCountry.population}</p>
+            <img src={selectedCountry.flags.png} alt={`Flag of ${selectedCountry.name.common}`} />
+            {renderWeather()}
           </div>
         )}
       </div>
