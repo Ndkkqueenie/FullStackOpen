@@ -66,6 +66,23 @@ const App = () => {
       });
   };
 
+  const handleDelete = (id) => {
+    const personToDelete = persons.find((person) => person.id === id);
+    const confirmDelete = window.confirm(`Delete ${personToDelete.name}?`);
+    
+    if (confirmDelete) {
+      personService
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter((person) => person.id !== id));
+        })
+        .catch(error => {
+          // Handle error here
+          console.log('Error deleting person:', error);
+        });
+    }
+  };  
+
   const filteredPersons = persons.filter((person) =>
     person.name && person.name.toLowerCase().includes(searchName.toLowerCase())
   );
@@ -88,7 +105,7 @@ const App = () => {
       </div>
       <div>
         <h2>Numbers</h2>
-        <NumbersList persons={filteredPersons} />
+        <NumbersList persons={filteredPersons} handleDelete={handleDelete} />
       </div> 
     </div>
   );
