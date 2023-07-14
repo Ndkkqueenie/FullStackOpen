@@ -3,12 +3,15 @@ import personService from './services/persons';
 import Form from './components/Form';
 import SearchField from './components/SearchField';
 import NumbersList from './components/NumbersList';
+import Notification from './components/Notification';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [searchName, setSearchName] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState('Notification alert here...');
 
   useEffect(() => {
     personService
@@ -58,11 +61,17 @@ const App = () => {
             );
             setNewName('');
             setNewNumber('');
+            setNotificationMessage(`Number for ${returnedPerson.name} updated successfully!`);
+            setTimeout(() => {
+              setNotificationMessage(null);
+            }, 5000);
           })
           .catch((error) => {
-            // Handle error here
-            console.log('Error updating person:', error);
-          });
+            setErrorMessage(`Error creating person: ${error.response.data.error}`);
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 5000);
+          });          
       }
     } else {
       const newPerson = {
@@ -75,13 +84,19 @@ const App = () => {
           setPersons(persons.concat(returnedPerson));
           setNewName('');
           setNewNumber('');
+          setNotificationMessage(`Added ${returnedPerson.name} successfully!`);
+          setTimeout(() => {
+            setNotificationMessage(null);
+          }, 5000);
         })
         .catch((error) => {
-          // Handle error here
-          console.log('Error creating person:', error);
+          setErrorMessage(`Error creating person: ${error.response.data.error}`);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
         });
     }
-  };  
+  };    
 
   const handleDelete = (id) => {
     const personToDelete = persons.find((person) => person.id === id);
@@ -107,6 +122,10 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={errorMessage} />
+      <div className='notify'>
+        <Notification  message={notificationMessage} />
+      </div>
       <div>
         <SearchField searchName={searchName} handleSearchChange={handleSearchChange} />
       </div>
